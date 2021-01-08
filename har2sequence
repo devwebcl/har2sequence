@@ -10,6 +10,9 @@
 # Convert HTTP Archive format (HAR) to websequencediagrams compatible output
 #
 
+# perl -MCPAN -e shell
+# install Mozilla::CA
+
 use 5.010;
 use strict;
 use warnings;
@@ -23,6 +26,7 @@ use JSON::PP;
 use Text::SimpleTable;
 use List::Util qw(max);
 use LWP::UserAgent;
+use Mozilla::CA;
 
 my (%opt);
 
@@ -177,15 +181,24 @@ sub wsd_post {
     my $wsd_style   = shift;
     my $wsd_message = shift;
 
-    my $wsd_url   = 'http://www.websequencediagrams.com/index.php';
+    print "hola\n";
+    my $wsd_url   = 'https://www.websequencediagrams.com/index.php';
     my $ua        = LWP::UserAgent->new();
     $ua->agent("har2sequence/0.1 " . $ua->agent);
+
+    print "wsd_url=" . $wsd_url . "\n";
+    print "wsd_style=" . $wsd_style . "\n";
+    print "wsd_message=" . $wsd_message . "\n";
+    print "wsd_format=" . $wsd_format . "\n";
+
     my $response  = $ua->post( $wsd_url, {
         'style'   => $wsd_style,
         'message' => $wsd_message,
         'format'  => $wsd_format,
     } );
+    print "response=" . $response . "\n";
     my $content   = $response->decoded_content();
+    print "content=" . $content . "\n";
     #{img: "?img=mscGSIfnU", page: 0, numPages: 1, errors: []}'
     # INVALID JSON!, keys not quoted
     my $coder = JSON::PP->new->ascii->allow_barekey;
